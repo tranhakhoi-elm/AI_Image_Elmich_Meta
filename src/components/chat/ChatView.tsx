@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { ChatMessage, ChatSession } from '../../../types';
 import { generateImageForChat, chatWithAI } from '../../../services/geminiService';
+import { isMetaProvider } from '../../../services/metaService';
 import { logChatSession, logGeneratedImage, fetchCategoryGuidance } from '../../../services/historyService';
 
 const TypingEffect: React.FC<{ text: string }> = ({ text }) => {
@@ -498,7 +499,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               </button>
             </div>
           </div>
-          <div className="text-center mt-3 text-xs text-gray-400">Gemini AI có thể mắc lỗi. Vui lòng kiểm tra lại những thông tin quan trọng.</div>
+          <div className="text-center mt-3 text-xs text-gray-400">{isMetaProvider() ? "Meta AI" : "Gemini AI"} có thể mắc lỗi. Vui lòng kiểm tra lại những thông tin quan trọng.</div>
         </div>
       </div>
     </main>

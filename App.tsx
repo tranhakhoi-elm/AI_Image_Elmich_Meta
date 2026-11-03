@@ -68,6 +68,7 @@ import {
   TONE_STYLES
 } from './constants';
 import { analyzePackagingContent, extractStandardParamsWithAI, generateProductImage, editProductImage, analyzeProductMaterials, getAiSuggestions, analyzeConceptAndCamera, analyzeTechConceptAndCamera, suggestPropsForConcept, getFallbackProps, suggestTechVisuals, suggestTechConcepts, analyzeStagingScene, analyzeStudioConcept, generateImageForChat, chatWithAI } from './services/geminiService';
+import { isMetaProvider } from './services/metaService';
 import { logGeneratedImage, rateGeneratedImage, fetchCategoryGuidance, fetchChatHistory, deleteChatHistorySession } from './services/historyService';
 
 // Danh sách công cụ hiển thị trên màn hình chọn công cụ (AppHomeScreen) —
@@ -705,7 +706,7 @@ const App: React.FC = () => {
   const handleTechAnalysis = async () => {
     if (!settings.productName || !settings.techDescription || settings.productImages.length === 0) return setAlertMessage("Thiếu thông tin");
     setAppState(AppState.ANALYZING);
-    setLoadingMessage("Gemini đang thiết kế ý tưởng kỹ thuật...");
+    setLoadingMessage(isMetaProvider() ? "Meta AI đang thiết kế ý tưởng kỹ thuật..." : "Gemini đang thiết kế ý tưởng kỹ thuật...");
     try {
       const dimStr = `${settings.dimensions.length}x${settings.dimensions.width}x${settings.dimensions.height}mm`;
       const result = await analyzeTechConceptAndCamera(settings.productName, settings.techDescription, dimStr, settings.productImages);
@@ -884,7 +885,7 @@ const App: React.FC = () => {
 
   const startGeneration = async (overrideSettings?: Partial<GenerationSettings>) => {
     setAppState(AppState.GENERATING);
-    setLoadingMessage("Gemini Thinking đang chuẩn bị kiệt tác...");
+    setLoadingMessage(isMetaProvider() ? "Meta AI đang suy luận & chuẩn bị kiệt tác..." : "Gemini Thinking đang chuẩn bị kiệt tác...");
     try {
       const finalSettings = { ...settings, ...overrideSettings };
       // Lấy chỉ dẫn đã đúc kết riêng cho dòng sản phẩm này (đúc kết từ các

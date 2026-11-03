@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { isMetaProvider } from '../../../services/metaService';
 import { 
   Box, 
   Move, 
@@ -579,7 +580,7 @@ export const PackagingFaceSelector: React.FC<PackagingFaceSelectorProps> = ({
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-white flex items-center gap-1.5">
             <CheckCircle2 size={13} className="text-emerald-400" />
-            Xem trước 5 mặt trích xuất thực tế gửi cho Gemini 3D
+            Xem trước 5 mặt trích xuất thực tế gửi cho {isMetaProvider() ? "Meta AI" : "Gemini"} dựng 3D
           </span>
           <span className="text-[10px] text-gray-400">
             AI sẽ bọc chính xác 5 ảnh này lên 5 mặt hộp
