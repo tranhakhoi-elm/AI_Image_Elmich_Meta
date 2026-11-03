@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+body {
+  background-color: #18191A;
+  color: #E4E6EB;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Safe area support for iOS notched screens and Android gesture bars */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+}
+
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top, 0px), 12px);
+}
+

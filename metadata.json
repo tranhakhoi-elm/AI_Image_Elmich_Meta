@@ -1,0 +1,6 @@
+{
+  "name": "Ai Image Elmich",
+  "description": "Hệ thống AI Studio toàn diện của Elmich dành cho thiết kế hình ảnh sản phẩm, kiểm duyệt bao bì tự động, phân tích kỹ thuật, dịch thuật bao bì và trợ lý đồ họa thông minh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
