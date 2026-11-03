@@ -328,6 +328,21 @@ app.post("/api/gemini/generate-content", async (req: any, res: any) => {
 // Server-side Meta Model API proxy (Muse Image 1.0) — khóa KHÔNG nhúng vào
 // bundle client: lấy từ header `x-meta-api-key` (người dùng nhập trong app)
 // hoặc biến môi trường META_MODEL_API_KEY phía server.
+
+// Gắn gợi ý tiếng Việt cho lỗi billing/subscription của Muse Image: model
+// ảnh TỪ CHỐI key dạng subscription dù key đó vẫn dùng được cho chữ/suy
+// luận — chỉ nhận key pay-as-you-go đã bật billing (xác nhận từ tài liệu
+// Meta và các bản tích hợp độc lập đã chạy thật).
+const withBillingHint = (message) => {
+  if (/subscription|billing|pay-as-you-go|not available/i.test(message)) {
+    return (
+      message +
+      " — Gợi ý: Muse Image chỉ nhận API key dạng TRẢ-THEO-LƯỢT (pay-as-you-go) đã bật Billing tại dev.meta.ai. Key dạng subscription vẫn dùng được cho chữ/phân tích nhưng sẽ bị từ chối khi tạo ảnh. Hãy tạo key mới ở mục API keys sau khi đã thêm phương thức thanh toán, rồi dán thay key cũ trong app."
+    );
+  }
+  return message;
+};
+
 app.post("/api/meta/images", async (req: any, res: any) => {
   try {
     const apiKey = req.headers["x-meta-api-key"] || process.env.META_MODEL_API_KEY;
@@ -379,7 +394,7 @@ app.post("/api/meta/images", async (req: any, res: any) => {
         data?.error?.message ||
         (typeof data?.error === "string" ? data.error : null) ||
         `Meta Model API trả lỗi HTTP ${metaRes.status}`;
-      return res.status(metaRes.status || 502).json({ success: false, error: message });
+      return res.status(metaRes.status || 502).json({ success: false, error: withBillingHint(message) });
     }
     const image = b64
       ? `data:image/${output_format || "png"};base64,${b64}`
