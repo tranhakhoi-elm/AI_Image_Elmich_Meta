@@ -121,7 +121,7 @@ export const WhiteBgRetouchWorkflow: React.FC<WhiteBgRetouchWorkflowProps> = ({
                         }));
                       } catch (err: any) {
                         console.error("Auto analyze failed:", err);
-                        setAlertMessage("Lỗi phân tích chất liệu. Vui lòng thử lại.");
+                        setAlertMessage(err?.message ? `Lỗi phân tích chất liệu: ${err.message}` : "Lỗi phân tích chất liệu. Vui lòng thử lại.");
                       } finally {
                         setIsAnalyzingMaterial(false);
                       }

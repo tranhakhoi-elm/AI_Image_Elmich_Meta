@@ -284,12 +284,23 @@ Return ONLY a JSON object with this exact structure:
 
     trackGeminiUsage(response, "Phân tích chất liệu sản phẩm");
     if (response.text) {
-      return JSON.parse(response.text);
+      const parsed = safeParseGeminiJson(response.text);
+      if (parsed && Array.isArray(parsed.categories)) {
+        return {
+          categories: parsed.categories,
+          description: String(parsed.description || ""),
+        };
+      }
+      throw new Error("AI trả về dữ liệu không đúng định dạng. Vui lòng thử lại.");
     }
-    return { categories: [], description: "" };
-  } catch (error) {
+    throw new Error("AI không trả về kết quả. Vui lòng thử lại.");
+  } catch (error: any) {
     console.error("Lỗi phân tích chất liệu:", error);
-    return { categories: [], description: "" };
+    // Ném lỗi kèm NGUYÊN NHÂN THẬT ra ngoài để giao diện hiển thị cho người
+    // dùng (vd chưa cấu hình Meta API key, key bị từ chối) thay vì nuốt lỗi
+    // và trả về rỗng như trước — lỗi nuốt khiến không ai chẩn đoán được.
+    if (error instanceof Error) throw error;
+    throw new Error("Không gọi được AI. Vui lòng thử lại.");
   }
 };
 
