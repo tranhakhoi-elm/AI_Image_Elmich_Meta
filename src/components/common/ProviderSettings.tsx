@@ -54,7 +54,7 @@ export const ProviderSettingsButton: React.FC = () => {
               <div>
                 <h3 className="text-white font-bold text-[17px]">Nhà cung cấp tạo ảnh</h3>
                 <p className="text-[#B0B3B8] text-[13px] mt-1">
-                  Áp dụng cho tạo ảnh Studio, chỉnh sửa ảnh và tạo ảnh trong Chat. Các tính năng phân tích bằng chữ vẫn dùng Gemini.
+                  Áp dụng cho TOÀN BỘ AI trong app: tạo/sửa ảnh chạy Muse Image 1.0, còn phân tích, gợi ý, suy luận prompt và chat chạy Muse Spark 1.3 — cả hai qua Meta Model API.
                 </p>
               </div>
               <button

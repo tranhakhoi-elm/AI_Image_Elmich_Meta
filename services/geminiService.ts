@@ -1,7 +1,8 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { Type } from "@google/genai";
 import { GenerationSettings, AISuggestions, AIConceptAnalysis, CameraSettings, PropConfig, ConceptSuggestion, AspectRatio, ImageSize, ImageModelTier, DielineStructureAnalysis } from "../types";
 import { reportToLark, calculateGeminiCost, calculateImagenCost } from "./metricsService";
 import { isMetaProvider, metaGenerateImage, metaEditImage } from "./metaService";
+import { createAiClient } from "./aiClient";
 
 const trackGeminiUsage = async (response: any, taskName: string, modelName: string = "gemini-2.5-flash") => {
   try {
@@ -244,7 +245,7 @@ const whitenNearWhiteBackground = (base64Data: string, tolerance = 18): Promise<
 
 // Tự động phân tích chất liệu từ ảnh
 export const analyzeProductMaterials = async (imageBase64: string): Promise<{ categories: string[], description: string }> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const match = imageBase64.match(/^data:(image\/[a-z]+);base64,(.+)$/);
     const parts: any[] = [{
@@ -294,7 +295,7 @@ Return ONLY a JSON object with this exact structure:
 
 // --- CÁC HÀM CHO CÁC MODE CŨ ---
 export const getAiSuggestions = async (settings: { productName: string, visualStyle: string, techDescription?: string }): Promise<AISuggestions> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   let styleContext = settings.visualStyle === "TECH_PS" ? `Phong cách "Ảnh USP Kỹ thuật".` : `Phong cách cơ bản.`;
   
   try {
@@ -336,7 +337,7 @@ export const getAiSuggestions = async (settings: { productName: string, visualSt
 
 // 1. Phân tích Concept (Lifestyle) - CẬP NHẬT ĐỂ NHẬN ẢNH THAM KHẢO
 export const analyzeConceptAndCamera = async (productName: string, dimensions: string, images: string[], refImage: string | null, categoryGuidance?: string): Promise<AIConceptAnalysis> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const categoryGuidanceBlock = categoryGuidance
       ? `
@@ -438,7 +439,7 @@ Trả về JSON với mảng concepts (mỗi phần tử gồm title, prompt, pr
 
 // 2. Phân tích Tech USP
 export const analyzeTechConceptAndCamera = async (productName: string, techDesc: string, dimensions: string, images: string[]): Promise<AIConceptAnalysis> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const prompt = `
 === ĐỌC QUY CHUẨN TRƯỚC KHI THỰC HIỆN (BẮT BUỘC) ===
@@ -600,7 +601,7 @@ export const getFallbackProps = (productName: string = '', mode: 'STUDIO' | 'LIF
 
 // 3. Gợi ý Props cho Concept Lifestyle
 export const suggestPropsForConcept = async (productName: string, concept: string, mode: 'STUDIO' | 'LIFESTYLE' = 'LIFESTYLE', excludeProps: string[] = [], categoryGuidance?: string): Promise<{props: string[], placement: string}> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   const isMore = excludeProps.length > 0;
   const count = isMore ? 8 : 10;
   const categoryGuidanceNote = categoryGuidance
@@ -668,7 +669,7 @@ Trả về định dạng JSON với 'placement' (string) và 'props' (mảng ${
 
 // 4. Gợi ý Visual Elements cho Tech USP
 export const suggestTechVisuals = async (productName: string, concept: string): Promise<{props: string[], placement: string}> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -706,7 +707,7 @@ Trả về JSON với 'placement' (string) và 'props' (array of strings).`,
 
 // 5. Gợi ý Tech Concepts cho Hiệu ứng mặt biển
 export const suggestTechConcepts = async (productName: string, title: string): Promise<ConceptSuggestion[]> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -753,7 +754,7 @@ YÊU CẦU CHO 'prompt': Viết 100% bằng tiếng Việt, mạch lạc, BẮT 
 
 // 6. Phân tích phối cảnh staging
 export const analyzeStagingScene = async (concept: string, realSceneImg: string, refStyleImg: string): Promise<string[]> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const prompt = `
 === QUY CHUẨN THAM KHẢO (Lifestyle & Scene Staging) ===
@@ -793,7 +794,7 @@ Trả về JSON 10 vật phẩm trang trí thêm vào phòng.`;
 
 // 7. Phân tích Concept Studio (Mới)
 export const analyzeStudioConcept = async (productName: string, dimensions: string, images: string[], categoryGuidance?: string): Promise<AIConceptAnalysis> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const categoryGuidanceBlock = categoryGuidance
       ? `
@@ -884,7 +885,7 @@ Trả về JSON với 5 concepts (mỗi concept gồm title, prompt, props, plac
 };
 
 export const editProductImage = async (base64Image: string, prompt: string, imageSize: string = '1K', referenceImage?: string | null, sourceSettings?: GenerationSettings, imageModel: 'FLASH' | 'PRO' = 'FLASH'): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   
   const mimeTypeMatch = base64Image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
   if (!mimeTypeMatch || mimeTypeMatch.length !== 3) {
@@ -954,7 +955,7 @@ export const generateProductImage = async (
   history?: import('../types').SuccessfulPrompt[],
   categoryGuidance?: string
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   let finalPrompt = "";
 
   // Gợi ý từ lịch sử cục bộ (trình duyệt hiện tại) — cơ chế cũ, giữ để tương thích ngược
@@ -1433,18 +1434,15 @@ Output style: Premium commercial catalog product photography, hyper-detailed, 8k
       - ONLY output the final prompt text (in English), no explanations.
     `;
 
-    if (isMetaProvider()) {
-      // Muse Image là model tự suy luận trước khi vẽ: dùng thẳng bản chỉ dẫn
-      // đầy đủ này làm prompt, bỏ qua bước nhờ Gemini viết lại prompt.
-      finalPrompt = thinkingPrompt;
-    } else {
-      const thinkingResponse = await ai.models.generateContent({
-        model: "gemini-2.5-pro",
-        contents: thinkingPrompt
-      });
-      trackGeminiUsage(thinkingResponse, "Suy luận Prompt ảnh", "gemini-2.5-pro");
-      finalPrompt = thinkingResponse.text || "";
-    }
+    // Bước suy luận viết prompt: chạy qua createAiClient() nên tự đi theo
+    // nhà cung cấp đang chọn — Gemini (gemini-2.5-pro) hoặc Meta (Muse Spark
+    // qua MetaAdapter). Riêng phần VẼ ảnh sau đó mới rẽ sang endpoint images.
+    const thinkingResponse = await ai.models.generateContent({
+      model: "gemini-2.5-pro",
+      contents: thinkingPrompt
+    });
+    trackGeminiUsage(thinkingResponse, "Suy luận Prompt ảnh", "gemini-2.5-pro");
+    finalPrompt = thinkingResponse.text || "";
   } else if (settings.visualStyle === "TRACK_SOCKET_STAGING") {
     const socketDetails = settings.sockets?.map((s, idx) => {
       let detail = `- Loại ổ cắm ${idx + 1}: Số lượng ${s.quantity}`;
@@ -1623,7 +1621,7 @@ export const generateImageForChat = async (
   imageSize: string = '1K',
   categoryGuidance?: string
 ): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     if (isMetaProvider()) {
       const lastText = [...messages].reverse().find(m => m.text)?.text || 'Tạo ảnh sản phẩm Elmich';
@@ -1693,7 +1691,7 @@ Yêu cầu cụ thể của người dùng (dựa trên toàn bộ ngữ cảnh 
 };
 
 export const chatWithAI = async (messages: import('../types').ChatMessage[], modelName: string = 'gemini-2.5-pro'): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   const contents = messages.map(msg => {
     const parts: any[] = [{ text: msg.text }];
     // Nhớ cả ảnh người dùng tải lên LẪN ảnh AI đã tạo ở các lượt trước, để
@@ -1730,7 +1728,7 @@ export const chatWithAI = async (messages: import('../types').ChatMessage[], mod
  * từ file thiết kế phẳng (2D unfolded dieline).
  */
 export const analyzePackagingDieline = async (imageBase64: string): Promise<DielineStructureAnalysis> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const match = imageBase64.match(/^data:(image\/[a-z]+);base64,(.+)$/);
     const parts: any[] = [{
@@ -1805,7 +1803,7 @@ export const analyzePackagingContent = async (
   designFiles: {name: string, data: string}[],
   standardParams: {key: string, value: string}[]
 ): Promise<{params: any[]}> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const prompt = `Bạn là chuyên gia kiểm duyệt nội dung bao bì (QA/QC). Bạn được cung cấp các tài liệu thiết kế. Mỗi tài liệu đều được đi kèm với tên file của nó.
 
@@ -1892,7 +1890,7 @@ LƯU Ý QUAN TRỌNG VÀ BẮT BUỘC:
 
 
 export const extractStandardParamsWithAI = async (textData: string): Promise<{key: string, value: string}[]> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const prompt = `Bạn là chuyên gia phân tích dữ liệu sản phẩm. Hãy trích xuất các thông số kỹ thuật quan trọng từ văn bản thô (thường được copy từ file Excel) dưới đây.
 Văn bản thô:
@@ -1960,7 +1958,7 @@ LƯU Ý:
 };
 
 export const analyzeAndTranslatePackaging = async (imageBase64: string): Promise<{ regions: any[] }> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const match = imageBase64.match(/^data:(image\/[a-z]+);base64,(.+)$/);
     if (!match) throw new Error("Ảnh không hợp lệ.");
@@ -2010,7 +2008,7 @@ Trả về một JSON có cấu trúc sau:
 
 // Phân tích phong cách ảnh tham khảo cho Canvas Workflow
 export const analyzeReferenceImageStyle = async (imageBase64: string, referenceNote?: string): Promise<{ description: string }> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   try {
     const match = imageBase64.match(/^data:(image\/[a-z]+);base64,(.+)$/);
     const parts: any[] = [{
@@ -2080,7 +2078,7 @@ export interface ExecuteAiNodeTaskResult {
 }
 
 export const executeAiNodeTask = async (params: ExecuteAiNodeTaskParams): Promise<ExecuteAiNodeTaskResult> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = createAiClient();
   const { aiType, contentSubtype, customInstruction, inputImages = [], referenceImage, promptText, conceptPrompt, productName, aspectRatio = '1:1', imageSize = '1K', imageModel = 'FLASH' } = params;
 
   if (aiType === 'IMAGE') {

@@ -47,6 +47,24 @@ export function calculateGeminiCost(modelName: string, promptTokens: number, can
 const FLASH_IMAGE_PRICE_PER_IMAGE: Record<string, number> = { '1K': 0.067, '2K': 0.101, '4K': 0.151 };
 const PRO_IMAGE_PRICE_PER_IMAGE: Record<string, number> = { '1K': 0.134, '2K': 0.134, '4K': 0.24 };
 
+// Bảng giá Meta Model API (Standard tier, https://dev.meta.ai — giá công bố
+// tại thời điểm tích hợp): Muse Spark $1.25 / 1M token vào, $4.25 / 1M token
+// ra; Muse Image $0.01 / ảnh phẳng (không theo độ phân giải).
+export function calculateMetaTextCost(promptTokens: number, completionTokens: number): { tokens: number; costUSD: number } {
+  const costUSD = (promptTokens * 1.25 / 1000000) + (completionTokens * 4.25 / 1000000);
+  return {
+    tokens: promptTokens + completionTokens,
+    costUSD: Math.round(costUSD * 100000) / 100000
+  };
+}
+
+export function calculateMetaImageCost(numImages: number = 1): { tokens: number; costUSD: number } {
+  return {
+    tokens: 0,
+    costUSD: Math.round(0.01 * numImages * 1000) / 1000
+  };
+}
+
 export function calculateImagenCost(modelName: string, numImages: number = 1, imageSize?: string): { tokens: number; costUSD: number } {
   const priceTable = modelName.includes("pro") ? PRO_IMAGE_PRICE_PER_IMAGE : FLASH_IMAGE_PRICE_PER_IMAGE;
   const perImageUSD = priceTable[imageSize || '1K'] ?? priceTable['1K'];

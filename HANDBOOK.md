@@ -78,6 +78,26 @@
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Nhà cung cấp AI: Gemini (mặc định gốc) ⇄ Meta Model API
+
+App hỗ trợ 2 nhà cung cấp, chuyển đổi bằng nút nổi **"Meta AI"** ở góc phải
+lên trên (lưu lựa chọn ở `localStorage` khóa `elmich_ai_provider`, mặc định
+**META** ở bản này):
+
+- **META:** TOÀN BỘ AI chạy trên Meta Model API — tạo/sửa ảnh bằng
+  **Muse Image 1.0** (endpoint images, qua `services/metaService.ts`), chữ
+  và suy luận (phân tích, gợi ý, viết prompt, dịch bao bì, chat) bằng
+  **Muse Spark 1.3** (qua `services/metaAdapter.ts` — lớp dịch bề mặt
+  `generateContent` của Gemini sang Chat Completions, gồm dịch
+  responseSchema → JSON Schema). Mọi lời gọi đều qua proxy phía server
+  (`/api/meta/images`, `/api/meta/chat` trong `server.ts` và `api/meta/`)
+  nên khóa Meta KHÔNG nhúng vào bundle: lấy từ khóa người dùng nhập trong
+  app (`elmich_meta_api_key`) hoặc biến môi trường `META_MODEL_API_KEY`.
+  Chi phí báo cáo theo giá Meta (`calculateMetaTextCost` /
+  `calculateMetaImageCost` trong `services/metricsService.ts`).
+- **GEMINI:** hành vi gốc như sơ đồ trên. Mọi hàm tạo client đều đi qua
+  `services/aiClient.ts` (`createAiClient()`) để rẽ nhánh theo lựa chọn này.
+
 Chi tiết đầy đủ (cây thư mục, state management, danh sách hàm service, 2 bản
 backend song song, build/deploy, nợ kỹ thuật) xem tại **[ARCHITECTURE.md](ARCHITECTURE.md)**.
 
@@ -333,6 +353,10 @@ an toàn hiện tại của hệ thống:
 # Gemini API Key (Bắt buộc — LƯU Ý: giá trị này sẽ bị nhúng vào bundle
 # client khi build, xem mục 10)
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# Meta Model API Key (Tùy chọn, chỉ dùng ở backend cho proxy /api/meta/* —
+# không bắt buộc nếu người dùng tự nhập key trong app qua nút "Meta AI")
+META_MODEL_API_KEY=
 
 # Tích hợp Google Sheets (Tùy chọn, chỉ dùng ở backend)
 GOOGLE_SHEET_ID=your_spreadsheet_id

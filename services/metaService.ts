@@ -14,6 +14,8 @@
 //   tỉ lệ khung hình chứ không phải kích thước pixel chính xác.
 // ============================================================================
 
+import { reportToLark, calculateMetaImageCost } from './metricsService';
+
 export type AiProvider = 'GEMINI' | 'META';
 
 const PROVIDER_STORAGE_KEY = 'elmich_ai_provider';
@@ -93,6 +95,16 @@ const callMetaProxy = async (body: Record<string, any>): Promise<string> => {
       json?.error ||
         `Meta Model API lỗi (HTTP ${res.status}). Kiểm tra lại API key và số dư tài khoản Meta.`
     );
+  }
+  // Báo cáo chi phí theo giá Meta ($0.01/ảnh) — các hàm ảnh phía app không
+  // gọi trackImagenUsage ở nhánh Meta nên báo cáo ngay tại đây.
+  try {
+    const { costUSD } = calculateMetaImageCost(1);
+    const productCode = localStorage.getItem('elmich_ai_product_code') || 'N/A';
+    const productName = localStorage.getItem('elmich_ai_product_name') || 'Tạo ảnh AI';
+    reportToLark(productCode, productName, 0, costUSD, 'Tạo ảnh Meta (Muse Image)');
+  } catch {
+    /* báo cáo chi phí lỗi không được làm hỏng luồng tạo ảnh */
   }
   return json.image as string; // data URL hoàn chỉnh
 };

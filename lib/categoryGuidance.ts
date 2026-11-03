@@ -4,7 +4,8 @@
 // để AI tham khảo cho đúng dòng sản phẩm ở các lần tạo ảnh sau, cả trong 11
 // workflow lẫn khi tạo ảnh qua Chat. Xem ARCHITECTURE.md mục 8.5 (cơ chế cũ
 // bị thay thế) và kế hoạch triển khai đi kèm.
-import { GoogleGenAI, Type } from "@google/genai";
+import { Type } from "@google/genai";
+import { createAiClient } from "../services/aiClient";
 import { getFirestore } from "./googleCloud.js";
 
 const MIN_SAMPLES_TO_SYNTHESIZE = 3;
@@ -47,7 +48,7 @@ export async function inferProductCategory({ productName, productCode, freeText 
   if (!signal) return null;
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const ai = createAiClient();
     const response = await ai.models.generateContent({
       model: "gemini-3.8-flash",
       contents: {
@@ -87,7 +88,7 @@ interface GuidanceSample {
  */
 async function synthesizeCategoryGuidance(visualStyle: string, productCategory: string, samples: GuidanceSample[]): Promise<string | null> {
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const ai = createAiClient();
     const samplesText = samples
       .map((s, i) => `${i + 1}. Sản phẩm: ${s.productName || "?"}${s.concept ? ` | Concept: ${s.concept}` : ""}\nPrompt: ${(s.prompt || "").slice(0, 500)}`)
       .join("\n\n");
