@@ -921,7 +921,7 @@ export const editProductImage = async (base64Image: string, prompt: string, imag
   if (isMetaProvider()) {
     const metaImages = [base64Image, ...(referenceImage ? [referenceImage] : [])];
     const rawMeta = await metaEditImage(prompt, metaImages, {});
-    let finalImage = await resizeImageToQuality(rawMeta, imageSize as '1K' | '2K' | '4K');
+    let finalImage = await resizeImageToQuality(rawMeta, '2K');
     if (sourceSettings?.visualStyle === "WHITE_BG_RETOUCH") {
       finalImage = await whitenNearWhiteBackground(finalImage);
     }
@@ -1576,7 +1576,7 @@ Output style: Premium commercial catalog product photography, hyper-detailed, 8k
       const rawMeta = metaImages.length > 0
         ? await metaEditImage(finalPrompt, metaImages, { aspectRatio: settings.aspectRatio })
         : await metaGenerateImage(finalPrompt, { aspectRatio: settings.aspectRatio });
-      let finalImage = await resizeImageToQuality(rawMeta, settings.imageSize as '1K' | '2K' | '4K');
+      let finalImage = await resizeImageToQuality(rawMeta, '2K');
       if (settings.visualStyle === "WHITE_BG_RETOUCH") {
         finalImage = await whitenNearWhiteBackground(finalImage);
       }
@@ -1644,7 +1644,7 @@ export const generateImageForChat = async (
       const rawMeta = metaImages.length > 0
         ? await metaEditImage(metaPrompt, metaImages, { aspectRatio })
         : await metaGenerateImage(metaPrompt, { aspectRatio });
-      return await resizeImageToQuality(rawMeta, imageSize as '1K' | '2K' | '4K');
+      return await resizeImageToQuality(rawMeta, '2K');
     }
 
     const categoryGuidanceBlock = categoryGuidance

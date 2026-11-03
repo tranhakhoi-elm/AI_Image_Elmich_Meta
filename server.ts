@@ -350,7 +350,7 @@ app.post("/api/meta/images", async (req: any, res: any) => {
       return res.status(400).json({
         success: false,
         error:
-          "Chưa cấu hình Meta Model API key. Nhập key trong app (nút Meta AI ở góc phải) hoặc đặt biến môi trường META_MODEL_API_KEY trên server.",
+          "Chưa cấu hình biến môi trường META_MODEL_API_KEY trên server. Vào Vercel → Settings → Environment Variables, thêm biến này rồi deploy lại.",
       });
     }
     const { mode, prompt, images, size, output_format } = req.body || {};
@@ -418,7 +418,7 @@ app.post("/api/meta/chat", async (req: any, res: any) => {
       return res.status(400).json({
         success: false,
         error:
-          "Chưa cấu hình Meta Model API key. Nhập key trong app (nút Meta AI ở góc phải) hoặc đặt biến môi trường META_MODEL_API_KEY trên server.",
+          "Chưa cấu hình biến môi trường META_MODEL_API_KEY trên server. Vào Vercel → Settings → Environment Variables, thêm biến này rồi deploy lại.",
       });
     }
     const { model, messages, response_format, temperature, top_p, max_tokens } = req.body || {};

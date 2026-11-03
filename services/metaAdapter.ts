@@ -22,7 +22,6 @@
 //   (metaService) trước khi tới generateContent.
 // ============================================================================
 
-import { getMetaApiKey } from './metaService';
 import { reportToLark, calculateMetaTextCost } from './metricsService';
 
 export const META_TEXT_MODEL = 'muse-spark-1.3';
@@ -128,13 +127,9 @@ const reportMetaUsage = (usage: any) => {
 };
 
 const callMetaChat = async (body: Record<string, any>): Promise<any> => {
-  const key = getMetaApiKey();
   const res = await fetch('/api/meta/chat', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(key ? { 'x-meta-api-key': key } : {}),
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
   const json: any = await res.json().catch(() => null);

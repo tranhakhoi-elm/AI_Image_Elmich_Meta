@@ -1,47 +1,35 @@
-import React, { useState } from 'react';
-import { KeyRound, X, Check } from 'lucide-react';
-import {
-  AiProvider,
-  getAiProvider,
-  setAiProvider,
-  getMetaApiKey,
-  setMetaApiKey,
-} from '../../../services/metaService';
+import React, { useEffect, useState } from 'react';
+import { Sparkles, X } from 'lucide-react';
 
 /**
- * Nút nổi + modal chọn nhà cung cấp tạo ảnh (Meta Muse Image 1.0 / Gemini)
- * và nhập Meta Model API key. Key chỉ lưu ở localStorage của trình duyệt và
- * được gửi kèm qua proxy /api/meta/images phía server — không nhúng vào
- * bundle JS như GEMINI_API_KEY hiện tại.
+ * Nút nổi + modal thông tin nhà cung cấp AI. App chạy META-ONLY: toàn bộ AI
+ * qua Meta Model API (ảnh: Muse Image 1.0, chữ/suy luận: Muse Spark 1.3).
+ * API key KHÔNG nhập trong app — proxy phía server lấy từ biến môi trường
+ * META_MODEL_API_KEY (khai báo trên Vercel). Modal này chỉ để thông tin.
  */
 export const ProviderSettingsButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [provider, setProviderState] = useState<AiProvider>(() => getAiProvider());
-  const [keyInput, setKeyInput] = useState<string>(() => getMetaApiKey());
-  const [saved, setSaved] = useState(false);
 
-  const handleProviderChange = (next: AiProvider) => {
-    setAiProvider(next);
-    setProviderState(next);
-  };
-
-  const handleSaveKey = () => {
-    setMetaApiKey(keyInput.trim());
-    setSaved(true);
-    window.setTimeout(() => setSaved(false), 2000);
-  };
+  // Dọn key/provider cũ từng lưu ở trình duyệt bởi các bản trước (nay không
+  // còn được đọc nữa: key chỉ ở phía server, provider luôn là META).
+  useEffect(() => {
+    try {
+      localStorage.removeItem('elmich_meta_api_key');
+      localStorage.removeItem('elmich_ai_provider');
+    } catch {
+      /* bỏ qua khi localStorage không khả dụng */
+    }
+  }, []);
 
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
         className="fixed top-3 right-[60px] z-40 h-10 px-3 rounded-full bg-[#242526] border border-[#3E4042] text-[#1877F2] hover:bg-[#3A3B3C] flex items-center gap-2 shadow-lg transition-colors"
-        title="Chọn nhà cung cấp AI tạo ảnh (Meta / Gemini) và nhập Meta API key"
+        title="App đang chạy bằng Meta Model API"
       >
-        <KeyRound size={16} />
-        <span className="text-[12px] font-semibold text-white">
-          {provider === 'META' ? 'Meta AI' : 'Gemini'}
-        </span>
+        <Sparkles size={16} />
+        <span className="text-[12px] font-semibold text-white">Meta AI</span>
       </button>
 
       {isOpen && (
@@ -52,9 +40,13 @@ export const ProviderSettingsButton: React.FC = () => {
           >
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-white font-bold text-[17px]">Nhà cung cấp tạo ảnh</h3>
-                <p className="text-[#B0B3B8] text-[13px] mt-1">
-                  Áp dụng cho TOÀN BỘ AI trong app: tạo/sửa ảnh chạy Muse Image 1.0, còn phân tích, gợi ý, suy luận prompt và chat chạy Muse Spark 1.3 — cả hai qua Meta Model API.
+                <h3 className="text-white font-bold text-[17px]">Nhà cung cấp AI</h3>
+                <p className="text-[#B0B3B8] text-[13px] mt-1 leading-relaxed">
+                  Toàn bộ app chạy bằng <span className="text-white font-semibold">Meta Model API</span>:
+                  tạo/sửa ảnh bằng <span className="text-white font-semibold">Muse Image 1.0</span>,
+                  phân tích, gợi ý, suy luận prompt và chat bằng{' '}
+                  <span className="text-white font-semibold">Muse Spark 1.3</span>.
+                  Chất lượng ảnh xuất ra luôn cố định ở mức 2K.
                 </p>
               </div>
               <button
@@ -65,55 +57,23 @@ export const ProviderSettingsButton: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 mb-5">
-              <button
-                onClick={() => handleProviderChange('META')}
-                className={`p-3 rounded-xl border text-left transition-colors ${provider === 'META' ? 'border-[#1877F2] bg-[#1877F2]/10' : 'border-[#3E4042] hover:bg-[#3A3B3C]'}`}
-              >
-                <div className="text-white font-semibold text-[14px]">Meta — Muse Image 1.0</div>
-                <div className="text-[#B0B3B8] text-[12px] mt-0.5">$0.01/ảnh, sửa ảnh theo ảnh mẫu</div>
-              </button>
-              <button
-                onClick={() => handleProviderChange('GEMINI')}
-                className={`p-3 rounded-xl border text-left transition-colors ${provider === 'GEMINI' ? 'border-[#1877F2] bg-[#1877F2]/10' : 'border-[#3E4042] hover:bg-[#3A3B3C]'}`}
-              >
-                <div className="text-white font-semibold text-[14px]">Gemini (Nano Banana)</div>
-                <div className="text-[#B0B3B8] text-[12px] mt-0.5">Luồng hiện tại của app</div>
-              </button>
+            <div className="bg-[#18191A] border border-[#3E4042] rounded-xl px-4 py-3">
+              <div className="text-white font-semibold text-[13px] mb-1">API key</div>
+              <p className="text-[#B0B3B8] text-[12px] leading-relaxed">
+                Key được cấu hình phía server qua biến môi trường{' '}
+                <span className="text-white font-mono">META_MODEL_API_KEY</span>{' '}
+                (Vercel → Settings → Environment Variables) — không cần nhập key
+                trong app. Lưu ý: Muse Image chỉ nhận key dạng trả-theo-lượt
+                (pay-as-you-go) đã bật Billing tại dev.meta.ai.
+              </p>
             </div>
 
-            <label className="block text-white font-semibold text-[14px] mb-2">
-              Meta Model API key
-            </label>
-            <input
-              type="password"
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              placeholder="Dán Model API key (tạo tại dev.meta.ai)..."
-              className="w-full bg-[#18191A] border border-[#3E4042] rounded-xl px-3 py-2.5 text-[14px] text-white placeholder:text-[#72767D] focus:outline-none focus:border-[#1877F2]"
-              autoComplete="off"
-            />
-            <p className="text-[#B0B3B8] text-[12px] mt-2 leading-relaxed">
-              Key dạng pay-as-you-go có bật billing mới tạo được ảnh (key theo gói subscription sẽ bị Meta từ chối).
-              Key lưu trong trình duyệt này và chỉ gửi qua proxy của server app, không nhúng vào file JS.
-              Để trống ô này nếu server đã đặt biến môi trường META_MODEL_API_KEY.
-            </p>
-
-            <div className="flex gap-2 mt-5">
-              <button
-                onClick={handleSaveKey}
-                className="flex-1 bg-[#1877F2] hover:bg-[#1663CC] text-white font-semibold text-[14px] rounded-xl py-2.5 flex items-center justify-center gap-2 transition-colors"
-              >
-                {saved ? <Check size={16} /> : null}
-                {saved ? 'Đã lưu' : 'Lưu key'}
-              </button>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="px-5 bg-[#3A3B3C] hover:bg-[#4A4B4C] text-white font-semibold text-[14px] rounded-xl py-2.5 transition-colors"
-              >
-                Đóng
-              </button>
-            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="w-full mt-5 bg-[#1877F2] hover:bg-[#1663CC] text-white font-semibold text-[14px] rounded-xl py-2.5 transition-colors"
+            >
+              Đóng
+            </button>
           </div>
         </div>
       )}

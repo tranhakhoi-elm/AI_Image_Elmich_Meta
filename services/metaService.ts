@@ -3,9 +3,9 @@
 //
 // Kiến trúc: trình duyệt KHÔNG gọi thẳng api.meta.ai (tránh CORS + lộ khóa),
 // mà gọi proxy cùng origin `/api/meta/images` (xem server.ts và
-// api/meta/images.ts). Proxy gắn khóa theo thứ tự ưu tiên:
-//   1) Header `x-meta-api-key` — khóa người dùng nhập trong app (lưu localStorage)
-//   2) Biến môi trường server META_MODEL_API_KEY
+// api/meta/images.ts). Proxy lấy khóa DUY NHẤT từ biến môi trường server
+// META_MODEL_API_KEY (khai báo trên Vercel) — app không nhập/lưu key ở
+// phía người dùng.
 //
 // Endpoint phía Meta (OpenAI-compatible, https://api.meta.ai/v1):
 //   - POST /images/generations  { model, prompt, size?, output_format? }
@@ -19,18 +19,14 @@ import { reportToLark, calculateMetaImageCost } from './metricsService';
 export type AiProvider = 'GEMINI' | 'META';
 
 const PROVIDER_STORAGE_KEY = 'elmich_ai_provider';
-const META_KEY_STORAGE_KEY = 'elmich_meta_api_key';
 
 export const META_IMAGE_MODEL = 'muse-image-1.0';
 
-/** Nhà cung cấp đang chọn. Mặc định META (theo yêu cầu chuyển sang Meta để test). */
-export const getAiProvider = (): AiProvider => {
-  try {
-    return localStorage.getItem(PROVIDER_STORAGE_KEY) === 'GEMINI' ? 'GEMINI' : 'META';
-  } catch {
-    return 'META';
-  }
-};
+/** Nhà cung cấp đang dùng. App chạy META-ONLY (toàn bộ AI qua Meta Model
+ * API) nên hàm này luôn trả 'META' — mã nguồn Gemini vẫn giữ trong
+ * geminiService/aiClient để khôi phục khi cần: chỉ cần trả lại logic đọc
+ * localStorage ở đây và mở lại lựa chọn trong ProviderSettings. */
+export const getAiProvider = (): AiProvider => 'META';
 
 export const setAiProvider = (provider: AiProvider) => {
   try {
@@ -41,23 +37,6 @@ export const setAiProvider = (provider: AiProvider) => {
 };
 
 export const isMetaProvider = (): boolean => getAiProvider() === 'META';
-
-export const getMetaApiKey = (): string => {
-  try {
-    return localStorage.getItem(META_KEY_STORAGE_KEY) || '';
-  } catch {
-    return '';
-  }
-};
-
-export const setMetaApiKey = (key: string) => {
-  try {
-    if (key) localStorage.setItem(META_KEY_STORAGE_KEY, key);
-    else localStorage.removeItem(META_KEY_STORAGE_KEY);
-  } catch {
-    /* bỏ qua khi localStorage không khả dụng */
-  }
-};
 
 /**
  * Đổi tỉ lệ khung hình của app ("9:16", "16:9", "1:1"...) sang tham số `size`
@@ -80,13 +59,9 @@ interface MetaImageOptions {
 }
 
 const callMetaProxy = async (body: Record<string, any>): Promise<string> => {
-  const key = getMetaApiKey();
   const res = await fetch('/api/meta/images', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(key ? { 'x-meta-api-key': key } : {}),
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
   const json: any = await res.json().catch(() => null);

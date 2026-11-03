@@ -80,23 +80,29 @@
 
 ### Nhà cung cấp AI: Gemini (mặc định gốc) ⇄ Meta Model API
 
-App hỗ trợ 2 nhà cung cấp, chuyển đổi bằng nút nổi **"Meta AI"** ở góc phải
-lên trên (lưu lựa chọn ở `localStorage` khóa `elmich_ai_provider`, mặc định
-**META** ở bản này):
+App chạy **META-ONLY** (`getAiProvider()` trong `services/metaService.ts`
+luôn trả `META`; nút nổi "Meta AI" ở góc phải giờ chỉ là bảng thông tin):
 
-- **META:** TOÀN BỘ AI chạy trên Meta Model API — tạo/sửa ảnh bằng
+- TOÀN BỘ AI chạy trên Meta Model API — tạo/sửa ảnh bằng
   **Muse Image 1.0** (endpoint images, qua `services/metaService.ts`), chữ
   và suy luận (phân tích, gợi ý, viết prompt, dịch bao bì, chat) bằng
   **Muse Spark 1.3** (qua `services/metaAdapter.ts` — lớp dịch bề mặt
   `generateContent` của Gemini sang Chat Completions, gồm dịch
   responseSchema → JSON Schema). Mọi lời gọi đều qua proxy phía server
   (`/api/meta/images`, `/api/meta/chat` trong `server.ts` và `api/meta/`)
-  nên khóa Meta KHÔNG nhúng vào bundle: lấy từ khóa người dùng nhập trong
-  app (`elmich_meta_api_key`) hoặc biến môi trường `META_MODEL_API_KEY`.
-  Chi phí báo cáo theo giá Meta (`calculateMetaTextCost` /
-  `calculateMetaImageCost` trong `services/metricsService.ts`).
-- **GEMINI:** hành vi gốc như sơ đồ trên. Mọi hàm tạo client đều đi qua
-  `services/aiClient.ts` (`createAiClient()`) để rẽ nhánh theo lựa chọn này.
+  nên khóa Meta KHÔNG nhúng vào bundle: proxy lấy khóa DUY NHẤT từ biến
+  môi trường `META_MODEL_API_KEY` (khai báo trên Vercel) — app không nhập
+  hay lưu key phía người dùng. Chi phí báo cáo theo giá Meta
+  (`calculateMetaTextCost` / `calculateMetaImageCost` trong
+  `services/metricsService.ts`).
+- Không còn bộ chọn model (Flash/Pro) và bộ chọn chất lượng ảnh: model duy
+  nhất là Muse Image 1.0, chất lượng xuất ra luôn cố định **2K** (ép cứng
+  tại các nhánh Meta trong `services/geminiService.ts`; component
+  `ModelSelection` không còn render gì).
+- Mã nguồn Gemini vẫn giữ nguyên (mọi hàm tạo client đi qua
+  `services/aiClient.ts` → `createAiClient()`) để khôi phục khi cần: trả
+  lại logic đọc `localStorage` trong `getAiProvider()` và mở lại lựa chọn
+  trong `ProviderSettings`.
 
 Chi tiết đầy đủ (cây thư mục, state management, danh sách hàm service, 2 bản
 backend song song, build/deploy, nợ kỹ thuật) xem tại **[ARCHITECTURE.md](ARCHITECTURE.md)**.
