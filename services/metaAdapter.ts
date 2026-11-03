@@ -23,6 +23,7 @@
 // ============================================================================
 
 import { reportToLark, calculateMetaTextCost } from './metricsService';
+import { shrinkDataUriForUpload } from './metaService';
 
 export const META_TEXT_MODEL = 'muse-spark-1.3';
 
@@ -57,26 +58,27 @@ const translateSchema = (schema: any): any => {
   return out;
 };
 
-const partToContentItem = (part: any): any => {
+const partToContentItem = async (part: any): Promise<any> => {
   if (!part) return null;
   if (typeof part === 'string') return { type: 'text', text: part };
   if (part.text !== undefined) return { type: 'text', text: String(part.text) };
   if (part.inlineData?.data) {
-    return {
-      type: 'image_url',
-      image_url: { url: `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}` },
-    };
+    // Thu nhỏ ảnh quá lớn trước khi gửi (tránh trần ~4,5MB của Vercel).
+    const url = await shrinkDataUriForUpload(
+      `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`
+    );
+    return { type: 'image_url', image_url: { url } };
   }
   return null;
 };
 
-const partsToContent = (parts: any[]): string | any[] => {
-  const items = (parts || []).map(partToContentItem).filter(Boolean);
+const partsToContent = async (parts: any[]): Promise<string | any[]> => {
+  const items = (await Promise.all((parts || []).map(partToContentItem))).filter(Boolean);
   if (items.length === 1 && items[0].type === 'text') return items[0].text;
   return items;
 };
 
-const contentsToMessages = (contents: any, config: any): any[] => {
+const contentsToMessages = async (contents: any, config: any): Promise<any[]> => {
   const messages: any[] = [];
 
   const systemInstruction = config?.systemInstruction;
@@ -96,13 +98,13 @@ const contentsToMessages = (contents: any, config: any): any[] => {
         messages.push({ role: 'user', content: item });
       } else if (item?.parts) {
         const role = item.role === 'model' || item.role === 'assistant' ? 'assistant' : 'user';
-        messages.push({ role, content: partsToContent(item.parts) });
+        messages.push({ role, content: await partsToContent(item.parts) });
       } else if (item?.text) {
         messages.push({ role: 'user', content: String(item.text) });
       }
     }
   } else if (contents?.parts) {
-    messages.push({ role: 'user', content: partsToContent(contents.parts) });
+    messages.push({ role: 'user', content: await partsToContent(contents.parts) });
   } else if (contents?.text) {
     messages.push({ role: 'user', content: String(contents.text) });
   }
@@ -156,7 +158,7 @@ const metaGenerateContent = async (params: {
     );
   }
 
-  const messages = contentsToMessages(contents, config);
+  const messages = await contentsToMessages(contents, config);
   if (messages.length === 0) throw new Error('Không có nội dung gửi cho Meta.');
 
   const baseBody: Record<string, any> = { model: META_TEXT_MODEL, messages };

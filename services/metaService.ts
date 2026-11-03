@@ -58,6 +58,53 @@ interface MetaImageOptions {
   outputFormat?: 'png' | 'jpeg' | 'webp';
 }
 
+/**
+ * Thu nhỏ data URI ảnh trước khi gửi qua proxy nếu quá lớn: Vercel giới hạn
+ * thân request của serverless function ở ~4,5MB — ảnh gốc studio (5–15MB)
+ * gửi thẳng sẽ bị chặn ở cửa (HTTP 413) trước khi tới Meta, trong khi luồng
+ * Gemini cũ gọi thẳng từ trình duyệt nên không vướng giới hạn này. Ngưỡng
+ * an toàn ~2,8MB ký tự base64; ảnh thu về cạnh dài tối đa 2048px, JPEG nền
+ * trắng (đủ chi tiết cho phân tích chất liệu lẫn ảnh tham chiếu tạo ảnh,
+ * vì ảnh Meta trả về vốn chỉ ~2,5MP).
+ */
+export const shrinkDataUriForUpload = async (
+  dataUri: string,
+  maxChars = 2_800_000
+): Promise<string> => {
+  if (
+    typeof dataUri !== 'string' ||
+    !dataUri.startsWith('data:image/') ||
+    dataUri.length <= maxChars ||
+    typeof document === 'undefined'
+  ) {
+    return dataUri;
+  }
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = reject;
+      el.src = dataUri;
+    });
+    const MAX_EDGE = 2048;
+    const scale = Math.min(1, MAX_EDGE / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return dataUri;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    const shrunk = canvas.toDataURL('image/jpeg', 0.85);
+    return shrunk.length < dataUri.length ? shrunk : dataUri;
+  } catch {
+    return dataUri;
+  }
+};
+
 const callMetaProxy = async (body: Record<string, any>): Promise<string> => {
   const res = await fetch('/api/meta/images', {
     method: 'POST',
@@ -112,10 +159,13 @@ export const metaEditImage = async (
   if (valid.length === 0) {
     return metaGenerateImage(prompt, options);
   }
+  const shrunk = await Promise.all(
+    valid.slice(0, 10).map((img) => shrinkDataUriForUpload(img))
+  );
   return callMetaProxy({
     mode: 'edit',
     prompt,
-    images: valid.slice(0, 10),
+    images: shrunk,
     size: metaSizeFromAspectRatio(options.aspectRatio),
     output_format: options.outputFormat || 'png',
   });
