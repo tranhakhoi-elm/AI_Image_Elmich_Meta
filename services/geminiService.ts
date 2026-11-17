@@ -632,8 +632,8 @@ YÊU CẦU PHÂN TÍCH:
 5. MÀU SẮC PHẢI ĂN KHỚP: mỗi đạo cụ phải có tông màu cùng nhóm (tone-on-tone) hoặc bổ trợ hài hòa với màu chủ đạo/phụ trợ của sản phẩm và bối cảnh đã chọn — tuyệt đối không đề xuất đạo cụ có màu sắc chỏi, lệch tông so với bảng màu tổng thể.
 
 ${mode === 'STUDIO'
-  ? 'LƯU Ý STUDIO: Phông nền đơn sắc. Đạo cụ tập trung làm nổi bật chất liệu và kiểu dáng sản phẩm — ví dụ: máy xay/ép đi với trái cây tươi cắt lát hoặc hạt cà phê rang; nồi/chảo đi với rau củ hoặc nguyên liệu đang chế biến; nồi chiên không dầu đi với khay thực phẩm/giỏ chiên; bàn ủi đi với vải/áo sơ mi xếp gọn; máy hút bụi đi với sàn nhà/thảm sạch bóng; bình giữ nhiệt đi với đá viên hoặc hơi nước bốc lên. Luôn kèm 1 bục đỡ (plinth) phù hợp kiểu dáng và hiệu ứng bóng đổ tự nhiên — NHƯNG BẮT BUỘC LUÂN PHIÊN chất liệu bục theo tông màu/phong cách sản phẩm, KHÔNG mặc định lúc nào cũng là khối đá travertine/marble: có thể là khối gỗ sồi/gỗ óc chó sáng màu, đĩa/trụ kim loại chải xước, bục mica/lucite trong mờ, bệ gốm men mờ, hoặc vải lanh/nhung phủ nhẹ — chọn loại ăn khớp nhất với tông màu sản phẩm ở yêu cầu (5).'
-  : 'LƯU Ý LIFESTYLE (Phối cảnh): Đạo cụ phải thuộc về môi trường tự nhiên của DANH MỤC sản phẩm. Ví dụ: đồ gia dụng nhà bếp đi với nguyên liệu nấu nướng, gia vị, thớt gỗ, bếp...; bình giữ nhiệt đi với balo, góc làm việc, hoặc đồ thể thao; bàn ủi đi với góc phòng giặt ủi, quần áo treo gọn gàng; máy hút bụi đi với không gian phòng khách/thảm sạch. Tập trung vào tính thực tế, chân thực, tránh những đạo cụ "thơ mộng" hoặc "trừu tượng" không ăn nhập với công năng.'
+  ? 'LƯU Ý STUDIO: Phông nền đơn sắc. Đạo cụ tập trung làm nổi bật chất liệu và kiểu dáng sản phẩm, và PHẢI ĐƯỢC SUY LUẬN RIÊNG cho chính sản phẩm này: xuất phát từ công năng thật của nó, thứ nó chế biến/chứa đựng, chất liệu, màu sắc của nó và concept đã chọn. TUYỆT ĐỐI không áp công thức đạo cụ cố định theo nhóm sản phẩm — cùng một nhóm, mỗi sản phẩm khác nhau phải cho ra đạo cụ khác nhau; mỗi đạo cụ đề xuất phải tự trả lời được vì sao nó thuộc về sản phẩm này. Luôn kèm 1 bục đỡ (plinth) kèm hiệu ứng bóng đổ tự nhiên, trong đó chất liệu và hình khối của bục được suy ra từ chất liệu, họ màu và hình khối của sản phẩm (ăn khớp với yêu cầu (5) về màu sắc); các lần gợi ý khác nhau phải luân phiên chất liệu bục, không lặp lại một chất liệu mặc định.'
+  : 'LƯU Ý LIFESTYLE (Phối cảnh): Đạo cụ phải thuộc về môi trường tự nhiên của CHÍNH sản phẩm này — suy ra từ nơi nó thực sự được dùng, người dùng của nó và khoảnh khắc sử dụng trong concept đã chọn, không áp công thức môi trường cố định theo nhóm sản phẩm. Tập trung vào tính thực tế, chân thực, tránh những đạo cụ "thơ mộng" hoặc "trừu tượng" không ăn nhập với công năng.'
 }
 ${isMore ? `\nDANH SÁCH ĐÃ GỢI Ý TRƯỚC ĐÓ (TUYỆT ĐỐI KHÔNG LẶP LẠI, kể cả biến thể gần giống): ${excludeProps.map(p => `"${p}"`).join(', ')}\nHãy nghĩ theo hướng KHÁC HẲN nhóm đạo cụ trên (đổi chất liệu, đổi loại vật dụng, đổi vị trí) để mở rộng lựa chọn cho người dùng, không chỉ đổi từ ngữ của cùng 1 ý tưởng.` : ''}
 ${categoryGuidanceNote}
@@ -832,15 +832,15 @@ BƯỚC 1 — PHÂN TÍCH HÌNH KHỐI, CHẤT LIỆU VÀ MÀU SẮC SẢN PHẨ
 
 BƯỚC 2 — ĐỀ XUẤT 5 CONCEPT STUDIO TOÀN DIỆN:
 Với MỖI concept trong 5 concept, bạn cung cấp 4 trường thông tin:
-1. 'title': Tên concept studio (tiếng Việt ngắn gọn, ví dụ: "Tối giản Hiện đại Tone-sur-tone", "Ánh sáng Kịch tính & Halo Hậu cảnh", "Bục Kiến trúc Đa tầng Tinh tế", "Studio Tinh khiết Softbox Đa điểm", "Nghệ thuật Tương phản Đẳng cấp").
-2. 'prompt': Bản mô tả chi tiết bố cục studio, màu nền giấy tone-sur-tone, cách đánh sáng 3-point (Key, Fill, 2 Rim lights, Backlight halo), cấu trúc bóng đổ đa tầng (contact shadow, key shadow).
-3. 'props': Danh sách 6-8 đạo cụ studio tối giản ăn khớp hoàn hảo với concept và màu sắc sản phẩm:
-   - 1 bục plinth phù hợp (bục đá travertine vân tự nhiên, khối bê tông mài, đĩa gốm mờ, khối gỗ sồi sáng màu, trụ kim loại chải xước, hoặc bục mica trong mờ)
-   - 2-3 phụ kiện hoặc nguyên liệu tối giản liên quan đến sản phẩm (ví dụ lát cam khô, vài hạt tiêu, cành lá xanh nhỏ, vải lanh gấp gọn)
+1. 'title': Tên concept studio (tiếng Việt ngắn gọn) — đặt theo Ý TƯỞNG RIÊNG của concept đó, rút ra từ đặc điểm cụ thể của chính sản phẩm đang phân tích; TUYỆT ĐỐI không dùng khung tên mẫu có sẵn áp lại cho mọi sản phẩm.
+2. 'prompt': Bản mô tả chi tiết bố cục studio, màu nền giấy tone-sur-tone, cách đánh sáng và cấu trúc bóng đổ theo đúng quy chuẩn studio ở trên, biến thiên theo mood của concept.
+3. 'props': Danh sách 6-8 đạo cụ studio tối giản, SUY LUẬN RIÊNG cho sản phẩm này từ phân tích ở Bước 1 (hình khối, chất liệu, màu sắc, công năng) — không lấy từ bất kỳ danh sách mẫu có sẵn nào:
+   - 1 bục plinth mà chất liệu và hình khối của nó được suy ra từ chất liệu, họ màu và hình khối của chính sản phẩm này (hòa tông hoặc tương phản có chủ đích); mỗi concept một chất liệu/hình khối bục khác nhau
+   - 2-3 phụ kiện hoặc nguyên liệu tối giản gắn trực tiếp với công năng và khoảnh khắc sử dụng của chính sản phẩm này
    (Mỗi đạo cụ mô tả cụ thể về chất liệu và hình khối).
 4. 'placement': Vị trí, góc đặt sản phẩm và góc máy (ví dụ: "Đặt chính giữa bục studio, góc chụp ngang tầm mắt 0-15 độ, ánh sáng viền ôm trọn đường cong").
 
-BẮT BUỘC ĐA DẠNG: 5 concept phải luân phiên chất liệu bục đỡ và sắc thái ánh sáng (dịu nhẹ / tương phản kịch tính / có halo hắt sáng).
+BẮT BUỘC ĐA DẠNG THẬT: 5 concept phải khác nhau ở Ý TƯỞNG CỐT LÕI (góc nhìn riêng về sản phẩm), không chỉ khác sắc thái ánh sáng. Mỗi concept phải bắt đầu từ một đặc điểm cụ thể đã quan sát được ở Bước 1 của chính sản phẩm này. Nếu hai concept trùng nhau về bục + nhóm đạo cụ + mood thì phải thiết kế lại một cái. Chất liệu bục và sắc thái ánh sáng (dịu nhẹ / tương phản kịch tính / có halo hắt sáng) cũng phải luân phiên, và không concept nào được là bản sao khung của concept sản phẩm khác.
 
 Trả về JSON với 5 concepts (mỗi concept gồm title, prompt, props, placement) và suggestedCamera.
 `;
@@ -969,11 +969,10 @@ export const generateProductImage = async (
   const ai = createAiClient();
   let finalPrompt = "";
 
-  // Gợi ý từ lịch sử cục bộ (trình duyệt hiện tại) — cơ chế cũ, giữ để tương thích ngược
-  const localHistoryNote = history && history.length > 0
-    ? `
-Note: Please align with the style of these previously successful concepts: ${history.map(h => h.imageSettings.concept || h.imageSettings.visualStyle).slice(-3).join(', ')}`
-    : "";
+  // ĐÃ GỠ ghi chú "align with previously successful concepts" từ lịch sử cục bộ:
+  // nó kéo mọi prompt mới về khuôn của các concept cũ, gây trùng lặp giữa các
+  // sản phẩm. Tham số `history` vẫn giữ trong chữ ký hàm để tương thích ngược
+  // với các nơi gọi, nhưng không còn được chèn vào prompt nữa.
 
   // Chỉ dẫn đúc kết theo dòng sản phẩm (server) — KHÔNG phải trích dẫn prompt
   // gốc, mà là chỉ dẫn ngắn gọn được tổng hợp từ các ảnh đã được đội ngũ
@@ -985,7 +984,7 @@ Chỉ dẫn bổ sung riêng cho dòng sản phẩm này (đúc kết từ các 
 ${categoryGuidance}`
     : "";
 
-  const optimizedHistoryNote = `${localHistoryNote}${categoryGuidanceNote}`;
+  const optimizedHistoryNote = `${categoryGuidanceNote}`;
   
   const formatProps = (props: PropConfig[]) => {
     return props.map(p => {
@@ -1387,21 +1386,15 @@ Output style: Premium commercial catalog product photography, hyper-detailed, 8k
     }
 
     const thinkingPrompt = `
-      Act as Elmich's Head of Creative, a senior commercial product photographer and expert prompt engineer. You must read and strictly adhere to the following three master styling manuals of Elmich AI Image Studio to write the absolute best prompt:
+      Act as Elmich's Head of Creative, a senior commercial product photographer and expert prompt engineer. You must read and strictly adhere to the following master styling manual of Elmich AI Image Studio — it is the ONLY manual for the current style "${settings.visualStyle}". Do NOT import staging rules, props or lighting recipes from other styles (no lifestyle environments inside a studio shot, no tech effects unless the style is TECH_PS):
       
-      === MASTER MANUAL 1: LIFESTYLE CONCEPT (BỐ CẢNH ĐỜI SỐNG ANH/CHỊ ĐÒI HỎI) ===
-      ${designLifestyleConcept}
-      
-      === MASTER MANUAL 2: CREATIVE STUDIO PRO (CHỤP TRONG STUDIO/PHÔNG NỀN TRƠN) ===
-      ${designStudioCreative}
-      
-      === MASTER MANUAL 3: TECH EFFECTS & VISUALS (HIỆU ỨNG CÔNG NGHỆ LOOPS VÀ PHYSICS) ===
-      ${designTechEffects}
+      === MASTER MANUAL: ${settings.visualStyle} ===
+      ${selectedStyleGuide}
       
       =============================================================================
 
       Generate a highly detailed, descriptive, and professional image generation prompt (in English) for a ${mode}.
-      Please apply the specific rules of the current selected style: "${settings.visualStyle}" (Main guide: ${settings.visualStyle === "CONCEPT" ? "LIFESTYLE" : settings.visualStyle === "STUDIO" ? "STUDIO" : "TECH EFFECTS"}), but cross-reference elements from the other manuals to guarantee absolute quality (e.g., maintain the premium material reflections, pristine geometry, absolute verticality, correct light bleed, and avoiding chaotic Sci-Fi graphics at all costs).
+      Apply the rules of the manual above strictly and completely, and derive every creative choice (background, plinth, props, lighting mood) from THIS product and THIS concept — never from a fixed recipe reused across products.
       
       Product: ${settings.productName}
       Creative Concept/Theme: ${settings.concept}
@@ -1412,18 +1405,11 @@ Output style: Premium commercial catalog product photography, hyper-detailed, 8k
       Composition: The product and props must be neatly arranged and fit entirely within the frame.
       Camera & Lighting Setup: ${cameraDetails}${materialInstruction}
       
-      CORE PHOTOGRAPHY AND DESIGN PRINCIPLES (STRICTLY ENFORCE):
-      1. Strict Geometry Preservation (Geometry Control Protocol): 
-         - Axis Alignment: "Maintain absolute verticality for all cylindrical products. Ensure the base and lid are perfectly parallel to the horizon."
-         - Logo Integrity: "Apply logo as a precise vector-based decal. No warping or distortion on curved surfaces. Center properly."
-         - Scale Reference: "Scale 1:1 relative to standard environment. Ensure handle-to-body proportion follows engineering standards."
-      2. PBR (Physically Based Rendering & Advanced Micro-surface Optics): 
-         - Metal (Inox/Aluminum): "Use Anisotropic reflection with a blurriness factor of 0.05. Highlights must trace the contour of the object, not bloom uncontrollably." Apply Fresnel reflections.
-         - Plastic: "Apply Micro-bump texture at 5% intensity to mimic high-grade food-safe plastic. Subtle Fresnel effect at the edges to show material thickness."
-         - Glass: "Set Refraction Index (IOR) to 1.5. Ensure the internal walls of the container are visible through the glass, with slight chromatic aberration at the edges to simulate professional camera optics."
-         - Ceramic/Stone: Grazing 45-degree light for micro-displacement/pores.
-      3. Shadow Structure: Must include contact shadows (stark black at the base), soft gradient key shadows, and feathered extrusion shadows for handles.
-      4. Lighting System: 3-Point Lighting System (Key Light, Fill Light, Rim Light).
+      NON-NEGOTIABLE INVARIANTS (apply on top of the manual above):
+      1. Geometry Preservation: maintain absolute verticality for cylindrical products; base and lid parallel to the horizon; proportions of every part (handles, lids, spouts) follow the source product exactly, at 1:1 scale relative to a standard environment.
+      2. Logo Integrity: reproduce the logo as a precise vector-based decal — no warping or distortion on curved surfaces, centered properly.
+      3. One Light Logic: every object in the frame (product and props alike) shares the same light direction, intensity falloff and color temperature, following the lighting system defined in the manual above.
+      Material optics, shadow structure and lighting design for THIS image must be derived from the manual above and from this product's actual materials and this concept — not from any fixed recipe carried across products.
       
       ASPECT RATIO SPECIFIC COMPOSITION DIRECTIVES:
       - Current Aspect Ratio: ${settings.aspectRatio}

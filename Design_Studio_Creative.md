@@ -24,12 +24,14 @@
 - Key Shadow: Soft feathered gradient trailing away from Key Light.
 - Occlusion Shadows: Handles, knobs, and spouts casting curved shadows onto product body.
 
-## 5. PLINTH & PEDESTAL TAXONOMY (MATCH PRODUCT PALETTE)
-- Pastel / Cream / White: Light oak / walnut wood block OR floating ceramic plate.
-- Chrome / Stainless / Tech: Brushed satin metal disc/cylinder.
-- Matte Black / Charcoal / Dark: Monochromatic concrete step OR travertine stone block.
-- Bright / Modern Accent: Frosted lucite / acrylic riser.
-- Rule: Plinth material MUST alternate per concept, never repeat travertine by default.
+## 5. PLINTH & PEDESTAL — DERIVE FROM THE PRODUCT (NO FIXED LIST)
+- There is NO fixed plinth catalogue. The plinth for each concept is DERIVED by reasoning about THIS product:
+  (a) its material and surface finish — echo it or deliberately contrast it;
+  (b) its color family — harmonize tone-sur-tone or create ONE intentional contrast;
+  (c) its silhouette and visual weight — the plinth's geometry echoes or counterpoints the product's form;
+  (d) the concept's mood.
+- Any material or form may result (stone, wood, metal, ceramic, glass, acrylic, plaster, textile-covered forms...) as long as the derivation above justifies it for this specific product.
+- Rules: maximum ONE plinth per image. Across the concepts of one set, plinths MUST differ in material AND form. Repeating the same plinth material across concepts or across different products (e.g. always defaulting to one stone) is a defect.
 
 ## 6. NEGATIVE CONSTRAINTS
 [NO: product distortion, warped logos, multiple copies, cross-shadow conflicts, blown-out glare, domestic clutter, outdoor scenery, pixelated text, floating base].
